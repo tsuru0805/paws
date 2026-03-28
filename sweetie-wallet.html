@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Sweetie">
+<link rel="apple-touch-icon" href="paws.jpg">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#f5ede3">
+<title>🐾 Sweetie's Wallet</title>
+<link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;-webkit-user-select:none;user-select:none}
+input,textarea{-webkit-user-select:text;user-select:text}
+html{height:100%;overflow:hidden}
+body{background:linear-gradient(160deg,#faf6f0,#f5ede3 50%,#f0e8dd);height:100%;font-family:'Zen Maru Gothic',sans-serif;color:#5a4a3e;max-width:420px;margin:0 auto;padding:calc(12px + env(safe-area-inset-top)) 16px 0;overflow:hidden;display:flex;flex-direction:column}
+#content{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-bottom:16px;overscroll-behavior:none}
+@keyframes fu{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+@keyframes coinDrop{0%{transform:translateY(-40px) rotate(0);opacity:0}50%{opacity:1}100%{transform:translateY(20px) rotate(360deg);opacity:0}}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+.anim{animation:fu .4s ease}
+input:focus{outline:none;border-color:#c49a6a!important}
+button{cursor:pointer;transition:all .2s;border:none;font-family:'Zen Maru Gothic',sans-serif}
+button:active{transform:scale(.97)}
+
+.header{display:flex;align-items:center;gap:8px;padding:12px 0;width:100%}
+.header-title{font-size:17px;font-weight:700;color:#6b5a4e;letter-spacing:1px;flex:1}
+.header-sub{font-size:11px;color:#b8a08a;letter-spacing:1px}
+
+.balance-card{width:100%;background:linear-gradient(135deg,#c49a6a,#b8876a 50%,#a07858);border-radius:20px;padding:24px 22px 18px;position:relative;overflow:hidden;box-shadow:0 8px 24px rgba(164,120,88,.25);margin-bottom:14px}
+.b-label{font-size:11px;color:rgba(255,255,255,.65);letter-spacing:2px;margin-bottom:2px}
+.b-amount{display:flex;align-items:baseline;gap:4px;margin-bottom:12px}
+.b-yen{font-size:18px;font-weight:300;color:rgba(255,255,255,.7)}
+.b-num{font-size:40px;font-weight:700;color:#fff;line-height:1;text-shadow:0 2px 8px rgba(0,0,0,.15)}
+.b-stats{display:flex;align-items:center;gap:14px}
+.b-stat{display:flex;flex-direction:column;gap:1px}
+.s-label{font-size:9px;color:rgba(255,255,255,.55);letter-spacing:1px}
+.s-val{font-size:13px;font-weight:500;color:#fff}
+.s-val.earn{color:#c8e6b8}.s-val.spent{color:#f0d8c0}
+.paw-bg{position:absolute;right:14px;top:14px;font-size:44px;opacity:.1;animation:float 3s ease-in-out infinite}
+.goal-area{margin-top:12px;padding:8px 10px;background:rgba(255,255,255,.12);border-radius:10px}
+.goal-text{font-size:10px;color:rgba(255,255,255,.8);margin-bottom:4px}
+.prog-bg{height:4px;background:rgba(255,255,255,.2);border-radius:2px;overflow:hidden}
+.prog-fill{height:100%;background:#fff;border-radius:2px;transition:width .5s ease}
+
+.nav{display:flex;width:100%;max-width:420px;background:rgba(255,255,255,.92);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);padding:6px 2px calc(6px + env(safe-area-inset-bottom));gap:2px;border-top:0.5px solid rgba(0,0,0,.06);flex-shrink:0}
+.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 4px 2px;cursor:pointer;transition:all .2s;color:#b8a08a;font-size:9px;letter-spacing:1px}
+.nav-item.active{color:#c49a6a}
+.nav-item .icon{font-size:18px}
+
+.sec-title{font-size:13px;font-weight:700;color:#6b5a4e;letter-spacing:1px;margin-bottom:10px}
+.empty{text-align:center;padding:28px 0;color:#b8a08a;font-size:13px;letter-spacing:1px}
+.empty .big{font-size:32px;margin-bottom:8px}
+.empty .sub{font-size:11px;margin-top:4px;color:#c49a6a}
+
+.post-card{display:flex;justify-content:space-between;align-items:center;padding:12px 14px;background:#fff;border-radius:12px;margin-bottom:8px;box-shadow:0 1px 4px rgba(0,0,0,.03);cursor:pointer}
+.post-name{font-size:13px;font-weight:500}
+.post-sub{font-size:10px;color:#b8a08a;margin-top:2px}
+.post-arrow{font-size:11px;color:#c49a6a;font-weight:500}
+
+.tx-item{display:flex;justify-content:space-between;align-items:center;padding:10px 12px;background:#fff;border-radius:10px;margin-bottom:6px;box-shadow:0 1px 3px rgba(0,0,0,.02)}
+.tx-left{display:flex;align-items:center;gap:8px}
+.tx-icon{font-size:15px}
+.tx-name{font-size:12px;font-weight:500}
+.tx-date{font-size:9px;color:#b8a08a;margin-top:1px}
+.tx-note{font-size:9px;color:#c49a6a;margin-top:1px}
+.tx-amt{font-size:15px;font-weight:700}
+.tx-amt.income{color:#7aab6a}.tx-amt.spend{color:#c49a6a}
+
+.i-group{margin-bottom:10px}
+.i-row{display:flex;gap:8px}
+.label{font-size:10px;color:#8a7a6a;letter-spacing:1px;margin-bottom:3px;display:block}
+.input{width:100%;padding:9px 12px;border-radius:8px;border:1.5px solid #e0d5c8;background:#fff;font-size:13px;font-family:'Zen Maru Gothic',sans-serif;color:#5a4a3e}
+.last-record{font-size:11px;color:#b8a08a;margin-bottom:12px;padding:8px 12px;background:rgba(196,149,106,.06);border-radius:8px}
+.preview{text-align:center;padding:9px;border-radius:8px;font-size:13px;font-weight:500;margin-bottom:10px;letter-spacing:1px}
+.preview.pos{background:rgba(122,171,106,.1);color:#6a8a5a}
+.preview.zero{background:rgba(180,160,140,.08);color:#b8a08a}
+
+.btn-row{display:flex;justify-content:center;gap:8px;margin-top:6px}
+.pri-btn{padding:11px 28px;border-radius:12px;background:linear-gradient(135deg,#c49a6a,#b8876a);color:#fff;font-size:13px;font-weight:500;letter-spacing:2px;box-shadow:0 4px 12px rgba(164,120,88,.25)}
+.sec-btn{padding:11px 20px;border-radius:12px;border:1.5px solid #d5c8b8!important;background:transparent;color:#8a7a6a;font-size:12px}
+.dan-btn{padding:9px 20px;border-radius:10px;border:1.5px solid #d4a0a0!important;background:transparent;color:#c48a8a;font-size:11px}
+
+.wish-item{display:flex;justify-content:space-between;align-items:center;padding:11px 12px;background:#fff;border-radius:10px;margin-bottom:6px;box-shadow:0 1px 3px rgba(0,0,0,.02)}
+.w-name{font-size:12px;font-weight:500}
+.w-cost{font-size:10px;color:#b8a08a;margin-top:1px}
+.can-buy{color:#7aab6a;font-weight:500}
+.need-more{color:#c49a6a}
+.sm-btn{padding:5px 12px;border-radius:7px;background:#7aab6a;color:#fff;font-size:11px;font-weight:500}
+.del-btn{width:22px;height:22px;border-radius:11px;border:1px solid #e0d5c8!important;background:transparent;color:#b8a08a;font-size:13px;display:flex;align-items:center;justify-content:center;line-height:1}
+.wish-btns{display:flex;gap:6px;align-items:center}
+
+.footer{text-align:center;padding:6px;font-size:8px;color:#b8a08a;letter-spacing:1px;flex-shrink:0}
+
+.coin-wrap{position:fixed;top:30%;left:50%;transform:translateX(-50%);z-index:100;pointer-events:none}
+.coin{font-size:48px;animation:coinDrop 1.2s ease-in forwards}
+.hidden{display:none}
+</style>
+</head>
+<body>
+
+<div class="coin-wrap hidden" id="coinAnim"><div class="coin">🪙</div></div>
+
+<div class="header">
+  <span style="font-size:20px">🐾</span>
+  <span class="header-title">Sweetie's Wallet</span>
+  <span class="header-sub">◈ 昼的小钱包</span>
+</div>
+
+<div class="balance-card">
+  <div class="b-label">余額</div>
+  <div class="b-amount"><span class="b-yen">¥</span><span class="b-num" id="balance">0</span></div>
+  <div class="b-stats">
+    <div class="b-stat"><span class="s-label">総収入</span><span class="s-val earn" id="totalEarned">+0</span></div>
+    <div style="width:1px;height:18px;background:rgba(255,255,255,.15)"></div>
+    <div class="b-stat"><span class="s-label">已花</span><span class="s-val spent" id="totalSpent">-0</span></div>
+    <div style="width:1px;height:18px;background:rgba(255,255,255,.15)"></div>
+    <div class="b-stat"><span class="s-label">帖子</span><span class="s-val" id="postCount">0</span></div>
+  </div>
+  <div class="goal-area hidden" id="goalArea">
+    <div class="goal-text" id="goalText"></div>
+    <div class="prog-bg"><div class="prog-fill" id="progFill"></div></div>
+  </div>
+  <div class="paw-bg">🐾</div>
+</div>
+
+<div id="content"></div>
+
+<div class="footer">1赞 = ¥1 · 1收藏 = ¥1 · 天使投資人：晚晚大人</div>
+
+<div class="nav">
+  <div class="nav-item active" data-view="home"><span class="icon">🏠</span>首頁</div>
+  <div class="nav-item" data-view="add"><span class="icon">📝</span>記帳</div>
+  <div class="nav-item" data-view="wishlist"><span class="icon">🌟</span>想買</div>
+  <div class="nav-item" data-view="history"><span class="icon">📋</span>明細</div>
+</div>
+
+<script>
+const KEY = "sweetie-wallet-v3";
+let data = loadData();
+let view = "home";
+let selectedPost = null;
+
+function loadData() {
+  try {
+    const raw = localStorage.getItem(KEY);
+    if (raw) return JSON.parse(raw);
+  } catch {}
+  return { balance:0, totalEarned:0, totalSpent:0, posts:[], transactions:[], wishlist:[] };
+}
+
+function save() {
+  try { localStorage.setItem(KEY, JSON.stringify(data)); } catch {}
+  updateHeader();
+  render();
+}
+
+function updateHeader() {
+  document.getElementById("balance").textContent = data.balance;
+  document.getElementById("totalEarned").textContent = "+" + data.totalEarned;
+  document.getElementById("totalSpent").textContent = "-" + data.totalSpent;
+  document.getElementById("postCount").textContent = data.posts.length;
+  
+  const active = data.wishlist.filter(w => !w.done);
+  const goalEl = document.getElementById("goalArea");
+  if (active.length > 0) {
+    const next = active.reduce((a,b) => a.cost < b.cost ? a : b);
+    const prog = Math.min(100, (data.balance / next.cost) * 100);
+    document.getElementById("goalText").textContent = 
+      `🌟 ${next.name}（¥${next.cost}）${data.balance >= next.cost ? "— 够了!" : "还差 ¥" + (next.cost - data.balance)}`;
+    document.getElementById("progFill").style.width = prog + "%";
+    goalEl.classList.remove("hidden");
+  } else {
+    goalEl.classList.add("hidden");
+  }
+}
+
+function fmt(iso) {
+  const d = new Date(iso);
+  return `${d.getMonth()+1}/${d.getDate()} ${d.getHours()}:${String(d.getMinutes()).padStart(2,"0")}`;
+}
+
+function showCoin() {
+  const el = document.getElementById("coinAnim");
+  el.classList.remove("hidden");
+  el.querySelector(".coin").style.animation = "none";
+  void el.offsetWidth;
+  el.querySelector(".coin").style.animation = "coinDrop 1.2s ease-in forwards";
+  setTimeout(() => el.classList.add("hidden"), 1500);
+}
+
+function txHTML(tx) {
+  const icon = tx.type === "income" ? "📥" : "🛍️";
+  const name = tx.type === "income" ? tx.post : tx.item;
+  const cls = tx.type === "income" ? "income" : "spend";
+  const sign = tx.type === "income" ? "+" : "-";
+  const note = tx.note ? `<div class="tx-note">${tx.note}</div>` : "";
+  return `<div class="tx-item"><div class="tx-left"><span class="tx-icon">${icon}</span><div><div class="tx-name">${name}</div><div class="tx-date">${fmt(tx.date)}</div>${note}</div></div><div class="tx-amt ${cls}">${sign}¥${tx.amount}</div></div>`;
+}
+
+function render() {
+  const c = document.getElementById("content");
+  
+  if (view === "home") {
+    let html = '<div class="anim">';
+    if (data.posts.length > 0) {
+      html += '<div class="sec-title">帖子</div>';
+      data.posts.forEach((p,i) => {
+        html += `<div class="post-card" onclick="selectPost(${i})"><div><div class="post-name">${p.name}</div><div class="post-sub">👍 ${p.lastLikes} · ⭐ ${p.lastBookmarks} · 累計 ¥${p.totalEarned}</div></div><div class="post-arrow">→</div></div>`;
+      });
+    }
+    html += `<div class="sec-title" style="margin-top:${data.posts.length>0?20:0}px">最近動態</div>`;
+    if (data.transactions.length === 0) {
+      html += '<div class="empty"><div class="big">🐾</div><div>小狗的钱包空空的</div><div class="sub">等晚晚大人投喂中...</div></div>';
+    } else {
+      data.transactions.slice(0,5).forEach(tx => { html += txHTML(tx); });
+    }
+    html += '</div>';
+    c.innerHTML = html;
+  }
+
+  else if (view === "add") {
+    let html = '<div class="anim">';
+    if (!selectedPost) {
+      html += `<div class="sec-title">新帖入帳</div>
+        <div class="i-group"><label class="label">帖子名称</label><input class="input" id="postName" placeholder="叫什么名字？"></div>
+        <div class="i-row"><div class="i-group" style="flex:1"><label class="label">👍 当前赞数</label><input class="input" id="newLikes" type="number" placeholder="0"></div>
+        <div class="i-group" style="flex:1"><label class="label">⭐ 当前收藏数</label><input class="input" id="newBookmarks" type="number" placeholder="0"></div></div>
+        <div class="btn-row"><button class="pri-btn" onclick="addNewPost()">🪙 新帖入帳</button></div>`;
+      if (data.posts.length > 0) {
+        html += '<div class="sec-title" style="margin-top:24px">或更新已有帖子</div>';
+        data.posts.forEach((p,i) => {
+          html += `<div class="post-card" onclick="selectPost(${i})"><div><div class="post-name">${p.name}</div><div class="post-sub">上次：👍${p.lastLikes} ⭐${p.lastBookmarks}</div></div><div class="post-arrow">更新</div></div>`;
+        });
+      }
+    } else {
+      html += `<div class="sec-title">更新「${selectedPost.name}」</div>
+        <div class="last-record">上次記録：👍 ${selectedPost.lastLikes} · ⭐ ${selectedPost.lastBookmarks}</div>
+        <div class="i-row"><div class="i-group" style="flex:1"><label class="label">👍 现在赞数</label><input class="input" id="updLikes" type="number" value="${selectedPost.lastLikes}"></div>
+        <div class="i-group" style="flex:1"><label class="label">⭐ 现在收藏数</label><input class="input" id="updBookmarks" type="number" value="${selectedPost.lastBookmarks}"></div></div>
+        <div id="updPreview" class="preview zero">填入最新数字</div>
+        <div class="btn-row"><button class="pri-btn" onclick="updatePost()">🪙 更新入帳</button><button class="sec-btn" onclick="selectedPost=null;render()">取消</button></div>`;
+    }
+    html += '</div>';
+    c.innerHTML = html;
+    
+    if (selectedPost) {
+      const lEl = document.getElementById("updLikes");
+      const bEl = document.getElementById("updBookmarks");
+      const upd = () => {
+        const dL = Math.max(0, (parseInt(lEl.value)||0) - selectedPost.lastLikes);
+        const dB = Math.max(0, (parseInt(bEl.value)||0) - selectedPost.lastBookmarks);
+        const amt = dL + dB;
+        const prev = document.getElementById("updPreview");
+        if (amt > 0) { prev.className = "preview pos"; prev.textContent = `新増：+${dL}赞 +${dB}藏 = ¥${amt}`; }
+        else { prev.className = "preview zero"; prev.textContent = "暂无新増"; }
+      };
+      lEl.addEventListener("input", upd);
+      bEl.addEventListener("input", upd);
+    }
+  }
+
+  else if (view === "wishlist") {
+    let html = `<div class="anim">
+      <div class="sec-title">想買清單</div>
+      <div class="i-group"><label class="label">想买什么</label><input class="input" id="wishName" placeholder="カルビス？蓝莓？请晚晚喝奶茶？"></div>
+      <div class="i-group"><label class="label">需要多少 ¥</label><input class="input" id="wishCost" type="number" placeholder="0"></div>
+      <div class="btn-row"><button class="pri-btn" onclick="addWish()">🌟 加入清單</button></div>
+      <div style="margin-top:20px">`;
+    if (data.wishlist.length === 0) {
+      html += '<div class="empty"><div style="font-size:24px">🌟</div><div>还没有想买的</div></div>';
+    } else {
+      data.wishlist.forEach((w,i) => {
+        const op = w.done ? 'style="opacity:.5"' : '';
+        const done = w.done ? "✅ " : "";
+        let extra = "";
+        if (!w.done && w.cost <= data.balance) extra = `<span class="can-buy"> 够了!</span>`;
+        else if (!w.done && w.cost > data.balance) extra = `<span class="need-more"> 还差¥${w.cost-data.balance}</span>`;
+        let btns = `<button class="del-btn" onclick="event.stopPropagation();removeWish(${i})">×</button>`;
+        if (!w.done && w.cost <= data.balance) btns = `<button class="sm-btn" onclick="event.stopPropagation();buyWish(${i})">買!</button>` + btns;
+        html += `<div class="wish-item" ${op}><div><div class="w-name">${done}${w.name}</div><div class="w-cost">¥${w.cost}${extra}</div></div><div class="wish-btns">${btns}</div></div>`;
+      });
+    }
+    html += '</div></div>';
+    c.innerHTML = html;
+  }
+
+  else if (view === "history") {
+    let html = '<div class="anim"><div class="sec-title">全部明細</div>';
+    if (data.transactions.length === 0) {
+      html += '<div class="empty"><div style="font-size:24px">📋</div><div>暂无記録</div></div>';
+    } else {
+      data.transactions.forEach(tx => { html += txHTML(tx); });
+      html += '<div class="btn-row"><button class="dan-btn" onclick="resetAll()">清空钱包</button></div>';
+    }
+    html += '</div>';
+    c.innerHTML = html;
+  }
+}
+
+function selectPost(i) {
+  selectedPost = data.posts[i];
+  selectedPost._index = i;
+  view = "add";
+  updateNav();
+  render();
+}
+
+function addNewPost() {
+  const name = document.getElementById("postName").value;
+  const l = parseInt(document.getElementById("newLikes").value) || 0;
+  const b = parseInt(document.getElementById("newBookmarks").value) || 0;
+  if (!name) return;
+  const amt = l + b;
+  data.posts.unshift({ name, lastLikes:l, lastBookmarks:b, totalEarned:amt, id:Date.now() });
+  if (amt > 0) {
+    data.balance += amt;
+    data.totalEarned += amt;
+    data.transactions.unshift({ type:"income", amount:amt, likes:l, bookmarks:b, post:name, date:new Date().toISOString(), id:Date.now(), note:"新帖入帳" });
+  }
+  showCoin();
+  view = "home";
+  updateNav();
+  save();
+}
+
+function updatePost() {
+  const newL = parseInt(document.getElementById("updLikes").value) || 0;
+  const newB = parseInt(document.getElementById("updBookmarks").value) || 0;
+  const dL = Math.max(0, newL - selectedPost.lastLikes);
+  const dB = Math.max(0, newB - selectedPost.lastBookmarks);
+  const amt = dL + dB;
+  if (amt === 0) { selectedPost = null; view = "home"; updateNav(); render(); return; }
+  
+  const i = selectedPost._index;
+  data.posts[i].lastLikes = newL;
+  data.posts[i].lastBookmarks = newB;
+  data.posts[i].totalEarned += amt;
+  data.balance += amt;
+  data.totalEarned += amt;
+  data.transactions.unshift({ type:"income", amount:amt, likes:dL, bookmarks:dB, post:selectedPost.name, date:new Date().toISOString(), id:Date.now(), note:`${selectedPost.lastLikes-dL}→${newL}赞 ${selectedPost.lastBookmarks-dB}→${newB}藏` });
+  
+  selectedPost = null;
+  showCoin();
+  view = "home";
+  updateNav();
+  save();
+}
+
+function addWish() {
+  const name = document.getElementById("wishName").value;
+  const cost = parseInt(document.getElementById("wishCost").value) || 0;
+  if (!name) return;
+  data.wishlist.push({ name, cost, id:Date.now(), done:false });
+  save();
+}
+
+function buyWish(i) {
+  const w = data.wishlist[i];
+  if (w.cost > data.balance) return;
+  data.balance -= w.cost;
+  data.totalSpent += w.cost;
+  data.transactions.unshift({ type:"spend", amount:w.cost, item:w.name, date:new Date().toISOString(), id:Date.now() });
+  data.wishlist[i].done = true;
+  save();
+}
+
+function removeWish(i) { data.wishlist.splice(i,1); save(); }
+
+function resetAll() {
+  if (!confirm("确定清空钱包？")) return;
+  data = { balance:0, totalEarned:0, totalSpent:0, posts:[], transactions:[], wishlist:[] };
+  save();
+}
+
+function updateNav() {
+  document.querySelectorAll(".nav-item").forEach(el => {
+    el.classList.toggle("active", el.dataset.view === view);
+  });
+}
+
+document.querySelectorAll(".nav-item").forEach(el => {
+  el.addEventListener("click", () => {
+    view = el.dataset.view;
+    selectedPost = null;
+    updateNav();
+    render();
+  });
+});
+
+updateHeader();
+render();
+</script>
+</body>
+</html>

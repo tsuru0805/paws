@@ -1,0 +1,20 @@
+{
+  "name": "Sweetie's Wallet",
+  "short_name": "Sweetie",
+  "start_url": "sweetie-wallet.html",
+  "display": "standalone",
+  "background_color": "#f5ede3",
+  "theme_color": "#f5ede3",
+  "icons": [
+    {
+      "src": "paws.jpg",
+      "sizes": "192x192",
+      "type": "image/jpeg"
+    },
+    {
+      "src": "paws.jpg",
+      "sizes": "512x512",
+      "type": "image/jpeg"
+    }
+  ]
+}
