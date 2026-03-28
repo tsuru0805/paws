@@ -137,24 +137,35 @@ button:active{transform:scale(.97)}
   <div class="nav-item" data-view="history"><span class="icon">📋</span>明細</div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script>
-const KEY = "sweetie-wallet-v3";
-let data = loadData();
+const SUPABASE_URL = "https://tbpppmkrmdnfnisikfui.supabase.co";
+const SUPABASE_KEY = "sb_publishable_x217GeeuwZCf9dW57OakDA_rXywsynK";
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+let data = { balance:0, totalEarned:0, totalSpent:0, posts:[], transactions:[], wishlist:[] };
 let view = "home";
 let selectedPost = null;
+let saving = false;
 
-function loadData() {
+async function loadData() {
   try {
-    const raw = localStorage.getItem(KEY);
-    if (raw) return JSON.parse(raw);
+    const { data: row } = await sb.from("wallet").select("data").eq("id","sweetie").single();
+    if (row && row.data) data = row.data;
   } catch {}
-  return { balance:0, totalEarned:0, totalSpent:0, posts:[], transactions:[], wishlist:[] };
-}
-
-function save() {
-  try { localStorage.setItem(KEY, JSON.stringify(data)); } catch {}
   updateHeader();
   render();
+}
+
+async function save() {
+  updateHeader();
+  render();
+  if (saving) return;
+  saving = true;
+  try {
+    await sb.from("wallet").update({ data, updated_at: new Date().toISOString() }).eq("id","sweetie");
+  } catch {}
+  saving = false;
 }
 
 function updateHeader() {
@@ -390,8 +401,7 @@ document.querySelectorAll(".nav-item").forEach(el => {
   });
 });
 
-updateHeader();
-render();
+loadData();
 </script>
 </body>
 </html>
