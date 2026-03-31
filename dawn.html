@@ -314,13 +314,13 @@ let updatingPostIdx = null; // index of post being updated (new likes)
 let sections = { add:true, posts:true, wishlist:false, history:false };
 
 // ── Data ──────────────────────────────────────────────────────────────────
+// Dawn 数据存在 sweetie 行的 "dawn" key 下，MCP 工具可以读到
 
 async function loadData() {
   try {
-    const { data: row } = await sb.from("wallet").select("data").eq("id","dawn").single();
-    if (row?.data) data = row.data;
-    else {
-      await sb.from("wallet").insert({ id:"dawn", data: EMPTY(), updated_at: new Date().toISOString() });
+    const { data: row } = await sb.from("wallet").select("data").eq("id","sweetie").single();
+    if (row?.data) {
+      data = row.data["dawn"] ?? EMPTY();
     }
   } catch {}
   updateHeader();
@@ -333,7 +333,11 @@ async function save() {
   if (saving) return;
   saving = true;
   try {
-    await sb.from("wallet").update({ data, updated_at: new Date().toISOString() }).eq("id","dawn");
+    // 先读完整数据再写回，避免覆盖 🐾/👾 数据
+    const { data: row } = await sb.from("wallet").select("data").eq("id","sweetie").single();
+    const allData = row?.data ?? {};
+    allData["dawn"] = data;
+    await sb.from("wallet").update({ data: allData, updated_at: new Date().toISOString() }).eq("id","sweetie");
   } catch {}
   saving = false;
 }
